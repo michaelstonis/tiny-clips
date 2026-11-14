@@ -774,6 +774,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     @discardableResult
     func updateSelectedShapeColor(_ color: Color) -> Bool {
         guard let index = selectedShapeIndex else { return false }
+        guard !colorsEqual(annotations[index].color, color) else { return true }
         recordHistory()
         annotations[index].color = color
         markDirty()
@@ -788,6 +789,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     @discardableResult
     func updateSelectedShapeFillColor(_ color: Color) -> Bool {
         guard let index = selectedFillableShapeIndex else { return false }
+        guard !colorsEqual(annotations[index].fillColor, color) else { return true }
         recordHistory()
         annotations[index].fillColor = color
         markDirty()

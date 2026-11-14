@@ -407,6 +407,40 @@ final class ScreenshotRedactionTests: XCTestCase {
     }
 
     @MainActor
+    func testUnchangedSelectedShapeColorsPreserveRedoHistory() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .rectangle,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .red, lineWidth: 4, text: "", points: []
+            )
+        ]
+        editor.selectedTool = .move
+        editor.selectedAnnotationIndex = 0
+
+        XCTAssertTrue(editor.updateSelectedShapeColor(.blue))
+        editor.undo()
+        XCTAssertTrue(editor.canRedo)
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeColor(.red))
+        XCTAssertTrue(editor.canRedo)
+        editor.redo()
+        XCTAssertEqual(editor.annotations[0].color, .blue)
+
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeFillColor(.green))
+        editor.undo()
+        XCTAssertTrue(editor.canRedo)
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeFillColor(.clear))
+        XCTAssertTrue(editor.canRedo)
+        editor.redo()
+        XCTAssertEqual(editor.annotations[0].fillColor, .green)
+    }
+
+    @MainActor
     func testTextFontSizeEditsSelectedAnnotationAndTextDefault() throws {
         let (editor, cleanup) = try makeEditor()
         defer { cleanup() }
