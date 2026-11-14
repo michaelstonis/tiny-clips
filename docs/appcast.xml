@@ -11,24 +11,24 @@
         <item>
             
             
-            <title>2.1.0.2</title>
+            <title>2.1.0.3</title>
             
             
-            <pubDate>Fri, 13 Nov 2026 07:37:10 +0000</pubDate>
+            <pubDate>Sat, 14 Nov 2026 17:41:57 +0000</pubDate>
             
             
-            <sparkle:version>68</sparkle:version>
+            <sparkle:version>69</sparkle:version>
             
             
-            <sparkle:shortVersionString>2.1.0.2</sparkle:shortVersionString>
+            <sparkle:shortVersionString>2.1.0.3</sparkle:shortVersionString>
             
             
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
             
             
-            <description><![CDATA[<h3>Fixed</h3><ul><li>macOS `Command-Q` now closes the active Settings, Clips Library, or editor window instead of quitting Tiny Clips; the menu-bar `Quit` action remains the explicit way to exit the app.</li><li>macOS Settings, Clips Library, and editor windows now keep Tiny Clips as the active application menu and restore the requested window as key instead of leaving the menu bar tied to another app.</li><li>macOS confirmation dialogs use standard, appearance-aware buttons instead of low-contrast destructive styling, including Studio, Clips Library, screenshot and video/GIF editors, cleanup, and analytics reset. Cancel is the default for destructive confirmations.</li></ul><h3>Changed</h3><ul><li>macOS Settings now follows the standard grouped layout: one card per group with its title above it, one setting per row with a separator, controls aligned on the right, and notes under the group they describe. The window opens larger. General is regrouped into Save Location, File Names, Notifications, Capture, App Behavior, and Maintenance, and Teleprompter combines scroll speed and text size. Advanced settings for Screenshot and Video open from a matching group at the end of the tab, which starts open when one of its settings is changed.</li><li>macOS Agent Control settings show the status and endpoint under the switch, list paired agents and the audit log before the setup guide, and number the setup steps. Copy buttons confirm on the button, the example prompt can be copied, and setup without a plugin has its own expandable group. The Guide window shows the same steps.</li><li>macOS Shortcuts settings now show an icon for every configurable and fixed key binding.</li><li>Agent Plugin instructions now use the GitHub Copilot CLI marketplace install flow instead of deprecated direct repository installs.</li><li>The macOS welcome wizard returns to its compact 460 × 390-point size, with resizing and scrollable content.</li><li>The macOS welcome wizard restores separate Screenshots, Videos, and GIFs preference cards, with Launch at Login at the top, and lets you customize the Screenshot, Record Video, and Record GIF shortcuts. Changes apply immediately without resetting saved choices; countdown and save-notification preferences remain in Settings. The final page illustrates how to open Tiny Clips from the menu bar.</li><li>The Recent Captures menu on macOS and Windows now shows the 10 newest items instead of 5.</li></ul><p><a href="https://github.com/jamesmontemagno/tiny-clips/compare/v2.1.0.1-mac...v2.1.0.2-mac">Full Changelog</a></p>]]></description>
-            <sparkle:releaseNotesLink>https://github.com/jamesmontemagno/tiny-clips/releases/tag/v2.1.0.2-mac</sparkle:releaseNotesLink>
-            <enclosure url="https://github.com/jamesmontemagno/tiny-clips/releases/download/v2.1.0.2-mac/TinyClips-v2.1.0.2-mac.zip" length="7952753" type="application/octet-stream" sparkle:edSignature="IoE6IPIJrJ4H6lzVDWrA7FcEm/wdgqGBZOTk8eG5NX/x1nXy0IXdOgA/GHF/UdihwUdbxin1r6NaOpAEoq4TAQ=="/>
+            <description><![CDATA[<h3>Fixed</h3><ul><li>macOS screenshot-editor text resizing after placement scales its content rectangle around the center and groups a slider drag into one undo step; changing tools no longer applies style edits to an invisible selection, and drawing-tool color controls stay on the active tool&#x27;s color.</li></ul><p><a href="https://github.com/jamesmontemagno/tiny-clips/compare/v2.1.0.2-mac...v2.1.0.3-mac">Full Changelog</a></p>]]></description>
+            <sparkle:releaseNotesLink>https://github.com/jamesmontemagno/tiny-clips/releases/tag/v2.1.0.3-mac</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/jamesmontemagno/tiny-clips/releases/download/v2.1.0.3-mac/TinyClips-v2.1.0.3-mac.zip" length="7960290" type="application/octet-stream" sparkle:edSignature="ZL2Pgnpr4nZs9xzhehHuViU2dTVrFl+AU6CdrpQ4k9N/8GpB7/L5Ojou6WNttJHmyt0+b9AU4gdNooiEpkubAg=="/>
             
         
         </item>

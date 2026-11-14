@@ -1000,7 +1000,9 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     private var selectedStrokedAnnotationIndex: Int? {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index) else { return nil }
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index) else { return nil }
         switch annotations[index].tool {
         case .rectangle, .circle, .arrow, .line, .pencil:
             return index
@@ -1022,6 +1024,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     @discardableResult
     func updateSelectedStrokeColor(_ color: Color) -> Bool {
         guard let index = selectedStrokedAnnotationIndex else { return false }
+        guard !colorsEqual(annotations[index].color, color) else { return true }
         recordHistory()
         annotations[index].color = color
         markDirty()
@@ -1058,6 +1061,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     @discardableResult
     func updateSelectedShapeFillColor(_ color: Color) -> Bool {
         guard let index = selectedFilledAnnotationIndex else { return false }
+        guard !colorsEqual(annotations[index].fillColor, color) else { return true }
         recordHistory()
         annotations[index].fillColor = color
         markDirty()
@@ -1065,7 +1069,10 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     private func selectedIndex(using uses: (EditTool) -> Bool) -> Int? {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), uses(annotations[index].tool) else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              uses(annotations[index].tool) else {
             return nil
         }
         return index
@@ -1117,6 +1124,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     @discardableResult
     func updateSelectedOutlineColor(_ color: Color) -> Bool {
         guard let index = selectedIndex(using: \.usesOutline) else { return false }
+        guard !colorsEqual(annotations[index].outlineColor, color) else { return true }
         recordHistory()
         annotations[index].outlineColor = color
         markDirty()
