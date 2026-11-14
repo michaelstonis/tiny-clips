@@ -187,6 +187,8 @@ The corresponding MCP tools are `tinyclips_notifications_status`, `tinyclips_not
 
 `editor.annotate` accepts a screenshot path and typed annotation objects for rectangles, ellipses, arrows, lines, pen strokes, text, numbered callouts, emoji, and redactions. Bounds and points use source-image pixels from the top-left. It renders to a new library capture and never overwrites the source. It does not open the interactive editor. Redactions accept `redactionLevel` (`light`, `medium`, or `heavy`) and `redactionStyle` (`blur`, `pixelate`, or `solid`). Blur and pixelate are built from the image, so use `solid` for passwords, keys, and other secrets; `light` can stay readable.
 
+The `screenshotEditorDefaultTool` setting picks the tool selected when the interactive screenshot editor opens: `move`, `background`, `crop`, `rectangle`, `ellipse`, `arrow`, `line`, `pen`, `text`, `number`, `emoji`, or `redact`. New installs start on `background`; installs from before the Background tool keep `move`. It has no effect on `editor.annotate`.
+
 ### Trimming and frames
 
 `editor.trim` takes a video or GIF `path` plus `start` and `end` in seconds and saves a trimmed copy; an `end` past the media length is clamped. Pass `removeAudio: true` to drop a video's audio. GIFs keep each frame overlapping the range, and the result reports the actual `start`, `end`, and `frameCount`. `editor.saveFrame` saves a single still image from a video at `time` seconds, or from a GIF at `time` or a zero-based `frame` index. Windows saves frames as PNG; macOS uses the configured screenshot format. Both commands need the `edit` scope, add a new library item, never overwrite or delete the source, and do not open a trimmer window.
