@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v2.1.0.3-mac - 2026-11-14
+
 ### Fixed
 - macOS screenshot-editor text resizing after placement scales its content rectangle around the center and groups a slider drag into one undo step; changing tools no longer applies style edits to an invisible selection, and drawing-tool color controls stay on the active tool's color.
 
