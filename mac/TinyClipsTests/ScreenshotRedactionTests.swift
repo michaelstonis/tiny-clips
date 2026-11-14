@@ -340,6 +340,107 @@ final class ScreenshotRedactionTests: XCTestCase {
     }
 
     @MainActor
+    func testSelectedShapeColorAndStrokeWidthEditTheAnnotation() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        let tools: [EditTool] = [.rectangle, .circle, .arrow, .line, .pencil]
+        editor.annotations = tools.map {
+            ScreenshotAnnotation(
+                tool: $0,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .red, lineWidth: 4, text: "", points: []
+            )
+        }
+
+        for index in editor.annotations.indices {
+            editor.selectedTool = .move
+            editor.selectedAnnotationIndex = index
+
+            XCTAssertEqual(editor.selectedShapeColor(), .red)
+            XCTAssertEqual(editor.selectedShapeLineWidth(), 4)
+            XCTAssertTrue(editor.updateSelectedShapeColor(.blue))
+            XCTAssertTrue(editor.updateSelectedShapeLineWidth(8))
+            XCTAssertEqual(editor.annotations[index].color, .blue)
+            XCTAssertEqual(editor.annotations[index].lineWidth, 8)
+
+            editor.undo()
+            editor.undo()
+            XCTAssertEqual(editor.annotations[index].color, .red)
+            XCTAssertEqual(editor.annotations[index].lineWidth, 4)
+        }
+    }
+
+    @MainActor
+    func testSelectedRectangleAndCircleFillCanBeEditedAndUndone() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [.rectangle, .circle].map {
+            ScreenshotAnnotation(
+                tool: $0,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .red, lineWidth: 4, text: "", points: []
+            )
+        }
+
+        for index in editor.annotations.indices {
+            editor.selectedTool = .move
+            editor.selectedAnnotationIndex = index
+            XCTAssertEqual(editor.selectedShapeFillColor(), .clear)
+            XCTAssertTrue(editor.updateSelectedShapeFillColor(.green))
+            XCTAssertEqual(editor.annotations[index].fillColor, .green)
+            editor.undo()
+            XCTAssertEqual(editor.annotations[index].fillColor, .clear)
+        }
+
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .arrow,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .red, lineWidth: 4, text: "", points: []
+            )
+        ]
+        editor.selectedTool = .move
+        editor.selectedAnnotationIndex = 0
+        XCTAssertNil(editor.selectedShapeFillColor())
+        XCTAssertFalse(editor.updateSelectedShapeFillColor(.green))
+        XCTAssertEqual(editor.selectedFillColor, .clear)
+    }
+
+    @MainActor
+    func testUnchangedSelectedShapeColorsPreserveRedoHistory() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .rectangle,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .red, lineWidth: 4, text: "", points: []
+            )
+        ]
+        editor.selectedTool = .move
+        editor.selectedAnnotationIndex = 0
+
+        XCTAssertTrue(editor.updateSelectedShapeColor(.blue))
+        editor.undo()
+        XCTAssertTrue(editor.canRedo)
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeColor(.red))
+        XCTAssertTrue(editor.canRedo)
+        editor.redo()
+        XCTAssertEqual(editor.annotations[0].color, .blue)
+
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeFillColor(.green))
+        editor.undo()
+        XCTAssertTrue(editor.canRedo)
+        editor.selectedAnnotationIndex = 0
+        XCTAssertTrue(editor.updateSelectedShapeFillColor(.clear))
+        XCTAssertTrue(editor.canRedo)
+        editor.redo()
+        XCTAssertEqual(editor.annotations[0].fillColor, .green)
+    }
+
+    @MainActor
     func testTextFontSizeEditsSelectedAnnotationAndTextDefault() throws {
         let (editor, cleanup) = try makeEditor()
         defer { cleanup() }

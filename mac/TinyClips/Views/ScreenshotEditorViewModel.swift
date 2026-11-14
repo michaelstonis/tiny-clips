@@ -766,6 +766,51 @@ class ScreenshotEditorViewModel: ObservableObject {
         return annotations[index].color
     }
 
+    func selectedShapeColor() -> Color? {
+        guard let index = selectedShapeIndex else { return nil }
+        return annotations[index].color
+    }
+
+    @discardableResult
+    func updateSelectedShapeColor(_ color: Color) -> Bool {
+        guard let index = selectedShapeIndex else { return false }
+        guard !colorsEqual(annotations[index].color, color) else { return true }
+        recordHistory()
+        annotations[index].color = color
+        markDirty()
+        return true
+    }
+
+    func selectedShapeFillColor() -> Color? {
+        guard let index = selectedFillableShapeIndex else { return nil }
+        return annotations[index].fillColor
+    }
+
+    @discardableResult
+    func updateSelectedShapeFillColor(_ color: Color) -> Bool {
+        guard let index = selectedFillableShapeIndex else { return false }
+        guard !colorsEqual(annotations[index].fillColor, color) else { return true }
+        recordHistory()
+        annotations[index].fillColor = color
+        markDirty()
+        return true
+    }
+
+    func selectedShapeLineWidth() -> CGFloat? {
+        guard let index = selectedShapeIndex else { return nil }
+        return annotations[index].lineWidth
+    }
+
+    @discardableResult
+    func updateSelectedShapeLineWidth(_ lineWidth: CGFloat) -> Bool {
+        guard let index = selectedShapeIndex else { return false }
+        guard annotations[index].lineWidth != lineWidth else { return true }
+        recordHistory()
+        annotations[index].lineWidth = lineWidth
+        markDirty()
+        return true
+    }
+
     func textBoxStyleForInspector() -> TextBoxStyle {
         guard selectedAnnotationIsText, let index = selectedAnnotationIndex else { return textBoxStyle }
         return annotations[index].textBoxStyle
@@ -2542,6 +2587,24 @@ class ScreenshotEditorViewModel: ObservableObject {
             return false
         }
         return annotations[index].tool == .blur
+    }
+
+    private var selectedShapeIndex: Int? {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              [.rectangle, .circle, .arrow, .line, .pencil].contains(annotations[index].tool) else {
+            return nil
+        }
+        return index
+    }
+
+    private var selectedFillableShapeIndex: Int? {
+        guard let index = selectedShapeIndex,
+              annotations[index].tool == .rectangle || annotations[index].tool == .circle else {
+            return nil
+        }
+        return index
     }
 
     private func baseNumberSidePixels() -> CGFloat {
