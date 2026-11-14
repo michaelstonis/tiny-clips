@@ -1691,7 +1691,7 @@ public sealed partial class EditorCanvas : UserControl
         var pixel = _controller.CanvasToPixel(p, ImageHost.ActualWidth, ImageHost.ActualHeight);
         if (_controller.HitTest(pixel) is { Tool: EditTool.Text } textAnn)
         {
-            _controller.Select(textAnn);
+            _controller.Select(_controller.Tool == EditTool.Select ? textAnn : null);
             EditTextAnnotation(textAnn);
         }
     }
