@@ -547,12 +547,19 @@ struct ScreenshotEditorView: View {
     private var primaryColorBinding: Binding<Color> {
         Binding(
             get: {
-                viewModel.selectedTextColor() ?? viewModel.selectedNumberBadgeColor() ?? viewModel.selectedColor
+                switch viewModel.inspectorTool {
+                case .text:
+                    viewModel.selectedTextColor() ?? viewModel.selectedColor
+                case .number:
+                    viewModel.selectedNumberBadgeColor() ?? viewModel.selectedColor
+                default:
+                    viewModel.selectedColor
+                }
             },
             set: { newValue in
                 if viewModel.inspectorTool == .text {
                     _ = viewModel.updateTextColor(newValue)
-                } else if !viewModel.updateSelectedNumberBadgeColor(newValue) {
+                } else if viewModel.inspectorTool != .number || !viewModel.updateSelectedNumberBadgeColor(newValue) {
                     viewModel.selectedColor = newValue
                 }
             }
@@ -620,6 +627,17 @@ struct ScreenshotEditorView: View {
                 if !viewModel.updateSelectedTextFontFamily(newValue) {
                     viewModel.textFontFamily = newValue
                 }
+            }
+        )
+    }
+
+    private var textFontSizeBinding: Binding<CGFloat> {
+        Binding(
+            get: {
+                viewModel.selectedTextFontSize() ?? viewModel.textFontSize
+            },
+            set: { newValue in
+                _ = viewModel.updateSelectedTextFontSize(newValue)
             }
         )
     }
@@ -1180,6 +1198,19 @@ struct ScreenshotEditorView: View {
                     ForEach(viewModel.availableTextFontFamilies, id: \.self) { family in
                         Text(family).tag(family)
                     }
+                }
+
+                HStack(spacing: 8) {
+                    Text("Size")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Slider(value: textFontSizeBinding, in: 10...72, step: 1)
+                        .accessibilityLabel("Text size")
+                        .accessibilityValue("\(Int(textFontSizeBinding.wrappedValue)) points")
+                    Text("\(Int(textFontSizeBinding.wrappedValue)) pt")
+                        .font(.caption)
+                        .monospacedDigit()
+                        .frame(minWidth: 34, alignment: .trailing)
                 }
 
                 HStack(spacing: 8) {

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Fixed
+- macOS screenshot-editor text can now be resized after placement; changing tools no longer applies style edits to an invisible selection, and drawing-tool color controls stay on the active tool's color.
+
 ## v2.1.0.2-mac - 2026-11-12
 
 ### Fixed

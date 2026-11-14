@@ -258,6 +258,20 @@ public sealed partial class EditorInspector : UserControl
         EmojiSection.Visibility = showsEmoji ? Visibility.Visible : Visibility.Collapsed;
         RotationSection.Visibility = Visibility.Collapsed;
 
+        if (showsColor)
+        {
+            AnnotationColorPicker.Color = _controller.StrokeColor;
+        }
+        if (showsStroke)
+        {
+            StrokeSlider.Value = _controller.StrokeThickness;
+        }
+        if (showsFill)
+        {
+            FillCheck.IsChecked = _controller.FillEnabled;
+            FillColorPicker.Color = _controller.FillEnabled ? _controller.FillColor : Colors.Transparent;
+        }
+
         if (showsEmoji)
         {
             SyncEmojiSelection(_controller.EmojiDefault);
@@ -275,7 +289,6 @@ public sealed partial class EditorInspector : UserControl
         }
         if (showsText)
         {
-            AnnotationColorPicker.Color = _controller.StrokeColor;
             FontSizeSlider.Value = _controller.TextFontSize;
             SelectFontInCombo(_controller.TextFontFamily);
             SyncTextBoxStyle(_controller.TextBoxStyleDefault);

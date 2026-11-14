@@ -30,6 +30,9 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
     @Published var selectedTool: EditTool = .move {
         didSet {
+            if selectedTool != .move {
+                selectedAnnotationIndex = nil
+            }
             // The crop selection belongs to the Crop tool; it never lingers hidden behind another tool.
             if oldValue == .crop, selectedTool != .crop {
                 clearCropSelection()
@@ -490,7 +493,10 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     func selectedEmojiValue() -> String? {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool == .emoji else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool == .emoji else {
             return nil
         }
         return annotations[index].text
@@ -500,7 +506,10 @@ class ScreenshotEditorViewModel: ObservableObject {
     func chooseEmoji(_ emoji: String) {
         selectedEmoji = emoji
         rememberRecentEmoji(emoji)
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool == .emoji else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool == .emoji else {
             return
         }
         guard annotations[index].text != emoji else { return }
@@ -510,7 +519,10 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     func selectedAnnotationRotationDegrees() -> Double? {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool.storesRotation else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool.storesRotation else {
             return nil
         }
         return Double(RotatableAnnotationGeometry.normalizedAngle(annotations[index].rotation) * 180 / .pi)
@@ -522,7 +534,10 @@ class ScreenshotEditorViewModel: ObservableObject {
 
     /// Captures one undo step before a slider drag starts changing the rotation live.
     func beginSelectedAnnotationRotationEdit() {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool.storesRotation else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool.storesRotation else {
             return
         }
         recordHistory()
@@ -530,7 +545,10 @@ class ScreenshotEditorViewModel: ObservableObject {
 
     @discardableResult
     func updateSelectedAnnotationRotationDegrees(_ degrees: Double, recordsHistory: Bool = true) -> Bool {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool.storesRotation else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool.storesRotation else {
             return false
         }
         let radians = RotatableAnnotationGeometry.normalizedAngle(CGFloat(degrees) * .pi / 180)
@@ -561,7 +579,6 @@ class ScreenshotEditorViewModel: ObservableObject {
             text: selectedEmoji,
             points: []
         ))
-        selectedAnnotationIndex = annotations.count - 1
         rememberRecentEmoji(selectedEmoji)
         markDirty()
     }
@@ -738,6 +755,11 @@ class ScreenshotEditorViewModel: ObservableObject {
         return annotations[index].isUnderlined
     }
 
+    func selectedTextFontSize() -> CGFloat? {
+        guard selectedAnnotationIsText, let index = selectedAnnotationIndex else { return nil }
+        return annotations[index].fontSize
+    }
+
     func selectedTextColor() -> Color? {
         guard selectedAnnotationIsText, let index = selectedAnnotationIndex else { return nil }
         return annotations[index].color
@@ -849,6 +871,20 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     @discardableResult
+    func updateSelectedTextFontSize(_ size: CGFloat) -> Bool {
+        if selectedAnnotationIsText, let index = selectedAnnotationIndex {
+            guard annotations[index].fontSize != size else { return true }
+            recordHistory()
+            annotations[index].fontSize = size
+            markDirty()
+            return true
+        }
+        guard selectedTool == .text else { return false }
+        textFontSize = size
+        return true
+    }
+
+    @discardableResult
     func updateSelectedTextBold(_ isBold: Bool) -> Bool {
         guard selectedAnnotationIsText, let index = selectedAnnotationIndex else { return false }
         recordHistory()
@@ -876,7 +912,10 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     func selectedArrowStyle() -> ArrowStyle? {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool == .arrow else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool == .arrow else {
             return nil
         }
         return annotations[index].arrowStyle
@@ -884,7 +923,10 @@ class ScreenshotEditorViewModel: ObservableObject {
 
     @discardableResult
     func updateSelectedArrowStyle(_ style: ArrowStyle) -> Bool {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index), annotations[index].tool == .arrow else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index),
+              annotations[index].tool == .arrow else {
             return false
         }
         recordHistory()
@@ -2452,21 +2494,27 @@ class ScreenshotEditorViewModel: ObservableObject {
     }
 
     private var selectedAnnotationIsText: Bool {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index) else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index) else {
             return false
         }
         return annotations[index].tool == .text
     }
 
     private var selectedAnnotationIsNumber: Bool {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index) else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index) else {
             return false
         }
         return annotations[index].tool == .number
     }
 
     private var selectedAnnotationIsBlur: Bool {
-        guard let index = selectedAnnotationIndex, annotations.indices.contains(index) else {
+        guard selectedTool == .move,
+              let index = selectedAnnotationIndex,
+              annotations.indices.contains(index) else {
             return false
         }
         return annotations[index].tool == .blur
