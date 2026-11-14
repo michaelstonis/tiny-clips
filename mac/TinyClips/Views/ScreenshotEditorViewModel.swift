@@ -118,6 +118,7 @@ class ScreenshotEditorViewModel: ObservableObject {
     private var pendingDragHistoryState: EditorCanvasState?
     private var didChangePendingDrag = false
     private var isGroupingTextBoxStyleEdit = false
+    private var isGroupingSelectedTextFontSizeEdit = false
 
     private var initialBackgroundStyle: ExportBackgroundStyle
     private var initialBackgroundColor: Color
@@ -849,6 +850,16 @@ class ScreenshotEditorViewModel: ObservableObject {
         isGroupingTextBoxStyleEdit = false
     }
 
+    func beginSelectedTextFontSizeEdit() {
+        guard !isGroupingSelectedTextFontSizeEdit, selectedAnnotationIsText else { return }
+        recordHistory()
+        isGroupingSelectedTextFontSizeEdit = true
+    }
+
+    func endSelectedTextFontSizeEdit() {
+        isGroupingSelectedTextFontSizeEdit = false
+    }
+
     private func updateTextBoxStyle(_ mutation: (inout TextBoxStyle) -> Void) {
         if selectedAnnotationIsText, let index = selectedAnnotationIndex {
             if !isGroupingTextBoxStyleEdit {
@@ -874,8 +885,21 @@ class ScreenshotEditorViewModel: ObservableObject {
     func updateSelectedTextFontSize(_ size: CGFloat) -> Bool {
         if selectedAnnotationIsText, let index = selectedAnnotationIndex {
             guard annotations[index].fontSize != size else { return true }
-            recordHistory()
-            annotations[index].fontSize = size
+            if !isGroupingSelectedTextFontSizeEdit {
+                recordHistory()
+            }
+            var annotation = annotations[index]
+            if annotation.fontSize > 0 {
+                let scale = size / annotation.fontSize
+                annotation.rect = CGRect(
+                    x: annotation.rect.midX - annotation.rect.width * scale / 2,
+                    y: annotation.rect.midY - annotation.rect.height * scale / 2,
+                    width: annotation.rect.width * scale,
+                    height: annotation.rect.height * scale
+                )
+            }
+            annotation.fontSize = size
+            annotations[index] = annotation
             markDirty()
             return true
         }

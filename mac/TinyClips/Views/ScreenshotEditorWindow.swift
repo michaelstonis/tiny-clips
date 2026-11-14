@@ -724,6 +724,14 @@ struct ScreenshotEditorView: View {
         }
     }
 
+    private func handleTextFontSizeSliderEditing(_ isEditing: Bool) {
+        if isEditing {
+            viewModel.beginSelectedTextFontSizeEdit()
+        } else {
+            viewModel.endSelectedTextFontSizeEdit()
+        }
+    }
+
     var body: some View {
         NavigationSplitView(columnVisibility: $splitVisibility) {
             sidebar
@@ -1204,7 +1212,12 @@ struct ScreenshotEditorView: View {
                     Text("Size")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Slider(value: textFontSizeBinding, in: 10...72, step: 1)
+                    Slider(
+                        value: textFontSizeBinding,
+                        in: 10...72,
+                        step: 1,
+                        onEditingChanged: handleTextFontSizeSliderEditing
+                    )
                         .accessibilityLabel("Text size")
                         .accessibilityValue("\(Int(textFontSizeBinding.wrappedValue)) points")
                     Text("\(Int(textFontSizeBinding.wrappedValue)) pt")
