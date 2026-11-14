@@ -553,14 +553,42 @@ struct ScreenshotEditorView: View {
                 case .number:
                     viewModel.selectedNumberBadgeColor() ?? viewModel.selectedColor
                 default:
-                    viewModel.selectedColor
+                    viewModel.selectedShapeColor() ?? viewModel.selectedColor
                 }
             },
             set: { newValue in
                 if viewModel.inspectorTool == .text {
                     _ = viewModel.updateTextColor(newValue)
                 } else if viewModel.inspectorTool != .number || !viewModel.updateSelectedNumberBadgeColor(newValue) {
-                    viewModel.selectedColor = newValue
+                    if !viewModel.updateSelectedShapeColor(newValue) {
+                        viewModel.selectedColor = newValue
+                    }
+                }
+            }
+        )
+    }
+
+    private var shapeFillColorBinding: Binding<Color> {
+        Binding(
+            get: {
+                viewModel.selectedShapeFillColor() ?? viewModel.selectedFillColor
+            },
+            set: { newValue in
+                if !viewModel.updateSelectedShapeFillColor(newValue) {
+                    viewModel.selectedFillColor = newValue
+                }
+            }
+        )
+    }
+
+    private var shapeLineWidthBinding: Binding<CGFloat> {
+        Binding(
+            get: {
+                viewModel.selectedShapeLineWidth() ?? viewModel.lineWidth
+            },
+            set: { newValue in
+                if !viewModel.updateSelectedShapeLineWidth(newValue) {
+                    viewModel.lineWidth = newValue
                 }
             }
         )
@@ -1146,7 +1174,7 @@ struct ScreenshotEditorView: View {
             }
 
             if showsFillColorPicker {
-                SwatchColorPicker(label: "Fill", color: $viewModel.selectedFillColor, supportsOpacity: true, allowsTransparent: true)
+                SwatchColorPicker(label: "Fill", color: shapeFillColorBinding, supportsOpacity: true, allowsTransparent: true)
             }
 
             if showsNumberTextColorPicker {
@@ -1298,7 +1326,7 @@ struct ScreenshotEditorView: View {
             }
 
             if viewModel.showsLineWidthControl {
-                Picker("Stroke", selection: $viewModel.lineWidth) {
+                Picker("Stroke", selection: shapeLineWidthBinding) {
                     Text("1 px").tag(CGFloat(1))
                     Text("2 px").tag(CGFloat(2))
                     Text("4 px").tag(CGFloat(4))
