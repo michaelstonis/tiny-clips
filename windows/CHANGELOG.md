@@ -6,8 +6,7 @@ own `CHANGELOG.md` at the repository root.
 ## [Unreleased]
 
 ### Fixed
-- Keyboard shortcut labels in an already-open Settings window refresh when returning from onboarding after editing, clearing, or resetting a shortcut.
-- After switching tools, the screenshot editor inspector shows the new tool's color, stroke width, fill, and badge settings instead of those of the last selected annotation, and the **Stroke**, **Font size**, and **Badge size** labels show the selected annotation's values.
+- After switching tools, the screenshot editor inspector shows the new tool's color, stroke width, fill, and badge settings instead of those of the last selected annotation, text edits no longer leave a selection active under another tool, and the **Stroke**, **Font size**, and **Badge size** labels show the selected annotation's values.
 - Selecting a redaction in the screenshot editor no longer marks the screenshot as edited or makes its style and strength the defaults for new redactions.
 
 ### Changed
@@ -19,6 +18,13 @@ own `CHANGELOG.md` at the repository root.
 - Screenshot arrows are now one smooth shape with an **Arrow** picker for **Classic** and **Tapered** presets. Drag the diamond handle on a selected arrow's middle to bend it either way (it snaps straight near the line), and use **Advanced** to set its **Arc**, **Start width**, **End width**, **Head size**, and head **Corners**. Editing any of these shows **Custom**. The previous straight and curved arrow styles are replaced by these controls. Arrows in the live preview now match the saved image at every zoom level, and a curved arrow can be selected anywhere along its curve.
 - The screenshot editor has a **Background** tool after **Select** (shortcut **G**) for padding, a background, and a frame, which used to sit in the inspector's **Background** expander. New installs open the editor on **Background** and upgrades keep **Select**; choose another with **Default editor tool** in Screenshot settings, or with the `screenshotEditorDefaultTool` Agent Control setting.
 - Short choices in the screenshot editor (**Arrow**, **Stroke position**, **Start**, **End**, **Corners**, redaction **Style** and **Strength**, and background image **Placement**) are now segmented controls instead of drop-downs.
+
+## [v2.1.0-windows] - 2026-11-13
+
+### Fixed
+- Keyboard shortcut labels in an already-open Settings window refresh when returning from onboarding after editing, clearing, or resetting a shortcut.
+
+### Changed
 - The welcome wizard now offers five quick preferences (launch at login, screenshot clipboard and editor behavior, video/GIF countdown, and save notifications) and editable Screenshot, Record Video, and Record GIF shortcuts. Changes apply immediately without resetting saved choices; shortcut recording uses the same validated flyout as Settings. Recording countdown uses a toggle with a shorter description, and the final page illustrates how to open Tiny Clips from the taskbar's system tray.
 - The tray's Recent menu now shows the 10 newest items instead of 5.
 

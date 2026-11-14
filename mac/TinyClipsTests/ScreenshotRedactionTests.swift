@@ -302,6 +302,125 @@ final class ScreenshotRedactionTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingAwayFromMoveClearsAnnotationSelection() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .text,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .black, lineWidth: 0, text: "Selected", points: []
+            )
+        ]
+        editor.selectedAnnotationIndex = 0
+
+        editor.selectedTool = .text
+
+        XCTAssertNil(editor.selectedAnnotationIndex)
+        XCTAssertFalse(editor.updateSelectedTextFontFamily("Helvetica"))
+        XCTAssertEqual(editor.annotations[0].text, "Selected")
+    }
+
+    @MainActor
+    func testSwitchingToPenKeepsNumberBadgeColorAsToolDefault() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .number,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.2, height: 0.2),
+                color: .black, lineWidth: 0, text: "1", points: []
+            )
+        ]
+        editor.selectedAnnotationIndex = 0
+        editor.selectedTool = .pencil
+
+        XCTAssertFalse(editor.updateSelectedNumberBadgeColor(.green))
+        XCTAssertEqual(editor.annotations[0].color, .black)
+    }
+
+    @MainActor
+    func testTextFontSizeEditsSelectedAnnotationAndTextDefault() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .text,
+                rect: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2),
+                color: .black, lineWidth: 0, text: "Selected", points: []
+            )
+        ]
+        editor.selectedTool = .move
+        editor.selectedAnnotationIndex = 0
+
+        let initialRect = editor.annotations[0].rect
+        XCTAssertTrue(editor.updateSelectedTextFontSize(28))
+        XCTAssertEqual(editor.annotations[0].fontSize, 28)
+        XCTAssertEqual(editor.annotations[0].rect.midX, initialRect.midX, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.midY, initialRect.midY, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.width, initialRect.width * 28 / 16, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.height, initialRect.height * 28 / 16, accuracy: 0.0001)
+        editor.undo()
+        XCTAssertEqual(editor.annotations[0].fontSize, 16)
+        XCTAssertEqual(editor.annotations[0].rect, initialRect)
+
+        editor.selectedTool = .text
+        XCTAssertTrue(editor.updateSelectedTextFontSize(24))
+        XCTAssertEqual(editor.textFontSize, 24)
+    }
+
+    @MainActor
+    func testTextFontSizeSliderDragIsOneUndoableEdit() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        let initialRect = CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.2)
+        editor.annotations = [
+            ScreenshotAnnotation(
+                tool: .text,
+                rect: initialRect,
+                color: .black, lineWidth: 0, text: "Selected", points: []
+            )
+        ]
+        editor.selectedTool = .move
+        editor.selectedAnnotationIndex = 0
+
+        editor.beginSelectedTextStyleEdit()
+        XCTAssertTrue(editor.updateSelectedTextFontSize(20))
+        XCTAssertTrue(editor.updateSelectedTextFontSize(27))
+        XCTAssertTrue(editor.updateSelectedTextFontSize(32))
+        editor.endSelectedTextStyleEdit()
+
+        XCTAssertEqual(editor.annotations[0].fontSize, 32)
+        XCTAssertEqual(editor.annotations[0].rect.midX, initialRect.midX, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.midY, initialRect.midY, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.width, initialRect.width * 2, accuracy: 0.0001)
+        XCTAssertEqual(editor.annotations[0].rect.height, initialRect.height * 2, accuracy: 0.0001)
+
+        editor.undo()
+        XCTAssertEqual(editor.annotations[0].fontSize, 16)
+        XCTAssertEqual(editor.annotations[0].rect, initialRect)
+        XCTAssertFalse(editor.canUndo)
+
+        editor.redo()
+        XCTAssertEqual(editor.annotations[0].fontSize, 32)
+        XCTAssertEqual(editor.annotations[0].rect.width, initialRect.width * 2, accuracy: 0.0001)
+    }
+
+    @MainActor
+    func testChoosingEmojiAfterPlacementChangesTheDefaultNotThePlacedSticker() throws {
+        let (editor, cleanup) = try makeEditor()
+        defer { cleanup() }
+        editor.selectedTool = .emoji
+        editor.selectedEmoji = "😀"
+        editor.placeEmojiAnnotation(at: CGPoint(x: 0.5, y: 0.5))
+
+        editor.chooseEmoji("🥳")
+
+        XCTAssertEqual(editor.annotations[0].text, "😀")
+        XCTAssertEqual(editor.selectedEmoji, "🥳")
+    }
+
+    @MainActor
     func testChangingTheImageDropsCachedPixels() throws {
         let (editor, cleanup) = try makeEditor()
         defer { cleanup() }

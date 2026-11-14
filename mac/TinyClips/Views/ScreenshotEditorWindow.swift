@@ -806,10 +806,7 @@ struct ScreenshotEditorView: View {
             },
             set: { newValue in
                 // Whole sizes, without a stepped slider's tick marks.
-                let size = newValue.rounded()
-                if !viewModel.updateSelectedTextFontSize(size) {
-                    viewModel.textFontSize = size
-                }
+                _ = viewModel.updateSelectedTextFontSize(newValue.rounded())
             }
         )
     }

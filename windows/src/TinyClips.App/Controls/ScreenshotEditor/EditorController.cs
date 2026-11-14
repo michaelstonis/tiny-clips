@@ -1773,10 +1773,10 @@ internal sealed class EditorController : IDisposable
             }
 
             RestoreAnnotation(entry.Annotation, entry.Snapshot);
-            SelectedAnnotation = entry.Annotation;
+            SelectedAnnotation = Tool == EditTool.Select ? entry.Annotation : null;
             MarkDirty();
             AnnotationVisualInvalidated?.Invoke(this, entry.Annotation);
-            SelectionChanged?.Invoke(this, entry.Annotation);
+            SelectionChanged?.Invoke(this, SelectedAnnotation);
             return;
         }
 

@@ -66,46 +66,6 @@ final class ScreenshotEditorViewModelTests: XCTestCase {
     }
 
     @MainActor
-    func testPlacedTextCanBeResizedFromTheInspector() throws {
-        let (editor, cleanup) = try makeEditor()
-        defer { cleanup() }
-        editor.selectedTool = .text
-        editor.textFontSize = 20
-        editor.textEditPosition = CGPoint(x: 0.5, y: 0.5)
-        editor.textEditValue = "Hello"
-        editor.commitTextAnnotation()
-        XCTAssertFalse(editor.updateSelectedTextFontSize(30))
-        let placed = editor.annotations[0]
-
-        editor.selectedTool = .move
-        editor.selectedAnnotationIndex = 0
-        XCTAssertEqual(editor.selectedTextFontSize(), 20)
-        XCTAssertTrue(editor.updateSelectedTextFontSize(40))
-
-        let resized = editor.annotations[0]
-        XCTAssertEqual(resized.fontSize, 40)
-        XCTAssertEqual(resized.rect.width, placed.rect.width * 2, accuracy: 1e-9)
-        XCTAssertEqual(resized.rect.height, placed.rect.height * 2, accuracy: 1e-9)
-        XCTAssertEqual(resized.rect.midX, placed.rect.midX, accuracy: 1e-9)
-        XCTAssertEqual(resized.rect.midY, placed.rect.midY, accuracy: 1e-9)
-        XCTAssertEqual(editor.textFontSize, 20)
-
-        editor.undo()
-        XCTAssertEqual(editor.annotations[0].fontSize, 20)
-        XCTAssertEqual(editor.annotations[0].rect, placed.rect)
-
-        // A slider drag is one undo step.
-        editor.selectedAnnotationIndex = 0
-        editor.beginSelectedTextStyleEdit()
-        editor.updateSelectedTextFontSize(30)
-        editor.updateSelectedTextFontSize(36)
-        editor.endSelectedTextStyleEdit()
-        XCTAssertEqual(editor.annotations[0].fontSize, 36)
-        editor.undo()
-        XCTAssertEqual(editor.annotations[0].fontSize, 20)
-    }
-
-    @MainActor
     func testEditorOpensOnTheDefaultToolAndBackgroundDragsDrawNothing() throws {
         let settings = CaptureSettings.shared
         let savedTool = settings.screenshotEditorDefaultTool

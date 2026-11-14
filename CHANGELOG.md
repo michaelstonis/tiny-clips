@@ -5,13 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ### Fixed
-- macOS `Command-Q` now closes the active Settings, Clips Library, or editor window instead of quitting Tiny Clips; the menu-bar `Quit` action remains the explicit way to exit the app.
-- macOS Settings, Clips Library, and editor windows now keep Tiny Clips as the active application menu and restore the requested window as key instead of leaving the menu bar tied to another app.
-- macOS confirmation dialogs use standard, appearance-aware buttons instead of low-contrast destructive styling, including Studio, Clips Library, screenshot and video/GIF editors, cleanup, and analytics reset. Cancel is the default for destructive confirmations.
-- Switching tools in the macOS screenshot editor now deselects the selected annotation, so color and size changes go to the new tool instead of quietly changing the last annotation you selected. For example, after selecting text, the pencil's color picker now shows and changes the pencil's color.
-- Text in the macOS screenshot editor can be resized after it's placed: select it with **Move** and use the **Size** slider in the sidebar.
 - A pencil stroke now counts as an unsaved change in the macOS screenshot editor, like other annotations.
-- Placing an emoji in the macOS screenshot editor no longer selects it, since only **Move** shows a selection; use **Move** to adjust it.
 
 ### Changed
 - The macOS screenshot editor can now change the color, fill, and stroke width of a selected rectangle, circle, arrow, line, or pencil stroke, with undo. Stroke width is a 1–40 px slider measured in image pixels, like Windows; the starting width scales with the capture so large screenshots keep their previous look.
@@ -24,6 +18,20 @@ All notable changes to this project will be documented in this file.
 - macOS screenshot arrows now share their geometry with Windows, so the editor preview and the saved image draw the same arrow.
 - The macOS screenshot editor has a **Background** tool after **Move** for padding, a background, and a frame, which used to sit in a collapsible sidebar section. The tool buttons are larger. New installs open the editor on **Background** and upgrades keep **Move**; choose another with **Default editor tool** in Screenshot settings, or with the `screenshotEditorDefaultTool` Agent Control setting.
 - Short choices in the macOS screenshot editor (**Arrow**, **Stroke position**, **Start**, **End**, **Corners**, and the export **Format**) are now segmented controls instead of pop-up menus.
+
+## v2.1.0.3-mac - 2026-11-14
+
+### Fixed
+- macOS screenshot-editor text resizing after placement scales its content rectangle around the center and groups a slider drag into one undo step; changing tools no longer applies style edits to an invisible selection, and drawing-tool color controls stay on the active tool's color.
+
+## v2.1.0.2-mac - 2026-11-12
+
+### Fixed
+- macOS `Command-Q` now closes the active Settings, Clips Library, or editor window instead of quitting Tiny Clips; the menu-bar `Quit` action remains the explicit way to exit the app.
+- macOS Settings, Clips Library, and editor windows now keep Tiny Clips as the active application menu and restore the requested window as key instead of leaving the menu bar tied to another app.
+- macOS confirmation dialogs use standard, appearance-aware buttons instead of low-contrast destructive styling, including Studio, Clips Library, screenshot and video/GIF editors, cleanup, and analytics reset. Cancel is the default for destructive confirmations.
+
+### Changed
 - macOS Settings now follows the standard grouped layout: one card per group with its title above it, one setting per row with a separator, controls aligned on the right, and notes under the group they describe. The window opens larger. General is regrouped into Save Location, File Names, Notifications, Capture, App Behavior, and Maintenance, and Teleprompter combines scroll speed and text size. Advanced settings for Screenshot and Video open from a matching group at the end of the tab, which starts open when one of its settings is changed.
 - macOS Agent Control settings show the status and endpoint under the switch, list paired agents and the audit log before the setup guide, and number the setup steps. Copy buttons confirm on the button, the example prompt can be copied, and setup without a plugin has its own expandable group. The Guide window shows the same steps.
 - macOS Shortcuts settings now show an icon for every configurable and fixed key binding.
